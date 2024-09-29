@@ -7,7 +7,6 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 
-
 const DAILY_QUESTION_KEY = "daily_question";
 const PARTICIPATION_KEY = "participation";
 
@@ -17,11 +16,14 @@ const getCurrentDate = () => {
 };
 
 const Reward = () => {
+
   const { connect } = useConnect();
   const [hasParticipated, setHasParticipated] = useState(false);
   const { address, isConnected } = useAccount();
-  const { writeContractAsync } = useWriteContract();
+  const { writeContractAsync , isPending } = useWriteContract();
   const router = useRouter();
+
+
 
   const reward = async () => {
     if (isConnected) {
@@ -34,12 +36,14 @@ const Reward = () => {
       console.log(tx);
       if (tx) {
         toast("claimed successfully");
+       
         localStorage.setItem(
           PARTICIPATION_KEY,
           JSON.stringify({ date: getCurrentDate(), correct: true })
         );
-        setHasParticipated(true);
-        router.push("/");
+        setHasParticipated(true);       
+        router.refresh();
+        
       } else {
         toast("unable to claim");
       }
@@ -53,9 +57,11 @@ const Reward = () => {
     <div>
       <button
         onClick={reward}
-        className="px-4 py-2 bg-teal-500 text-white rounded mt-4"
+        className={`px-4 py-2 bg-teal-500 text-white rounded mt-4 hover:bg-teal-700  ${
+          isPending ? "opacity-50 cursor-not-allowed" : ""}`}
       >
-        Claim Reward
+        {isPending ? "Claiming..." : "Claim Reward"}
+        
       </button>
     </div>
   );

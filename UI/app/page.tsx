@@ -24,7 +24,7 @@ export default function Home() {
   return (
     <div className="flex flex-col min-h-screen text-black bg-gray-200">
       {isMounted && (
-        <>
+        <div>
           <Header />
           {!isPlaying ? (
             <div className="flex flex-col items-center justify-center flex-1 px-4 text-center space-y-6">
@@ -47,7 +47,7 @@ export default function Home() {
           ) : (
             <Timer />
           )}
-        </>
+        </div>
       )}
     </div>
   );

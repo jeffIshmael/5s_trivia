@@ -1,36 +1,24 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+## 5sTRIVIA FRONTEND DOCUMENTATION
 
-## Getting Started
+### Overview
+5sTrivia is a frontend application built to provide users with a daily trivia challenge. Users have 40 seconds to answer 5 questions, earning Trivs tokens upon successful completion. The frontend manages user interactions, displays trivia questions, handles timing, and integrates with Web3 functionalities to reward users. 
+The frontend  fetches trivia questions from the Open Trivia DB API. This documentation covers the essential and complex parts of the frontend, focusing on the logic for fetching, rendering, and interacting with trivia questions from specified categories.
 
-First, run the development server:
+### Technology Stack
+**React.js (with TypeScript):** For building dynamic and responsive user interfaces.
+**Next.js 14.2.6:** Framework for server-side rendering and building scalable React applications.
+**Tailwind CSS:** Utility-first CSS framework for styling components efficiently.
+**Wagmi.js:** Library for interacting with Ethereum and other EVM-compatible blockchains.
+**Sonner.js:** For managing in-app notifications.
+**Open Trivia DB:** Source of trivia questions.
+**LocalStorage API:** To persist user data across sessions.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+### LocalStorage API
+LocalStorage has been used to keep track of user participation, ensuring users can’t answer more than one quiz per day. Data is saved and retrieved using helper functions for serialization/deserialization.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### Wagmi.js
+Wagmi is used to connect to the Ethereum network and interact with smart contracts. Functions like claimReward are executed via useContractWrite hooks from wagmi.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+### Open Trivia DB
+A public trivia API for fetching quiz questions. The app utilizes categories such as "General Knowledge," "Animals," "Vehicles," "History," and "Politics." which are passed randomly with every fetch request.
+The API is called using a retry mechanism to handle rate-limiting errors.
