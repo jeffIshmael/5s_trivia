@@ -33,7 +33,7 @@ Here’s a glimpse of the 5sTrivia game:
 3. **Store Rewards**: Store your rewards since the team is working on where to use them!
 
 ## Demo
-Live link [https://5s-trivia.vercel.app/]
+[Live link] (https://5s-trivia.vercel.app/)
 
 For more information, visit our [website](https://5s-trivia.vercel.app/) or contact support at [support@5strivia.com](mailto:jeffianmuchiri24@gmail.com).
 

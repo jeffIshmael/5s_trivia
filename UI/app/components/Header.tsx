@@ -18,7 +18,7 @@ const Header = () => {
   const balance = data as BigInt;
 
   useEffect(() => {
-    if (window.ethereum) {
+    if (window.ethereum && !isConnected) {
       connect({ connector: injected() });
     }
   }, []);
