@@ -19,6 +19,7 @@ const Reward = () => {
 
   const { connect } = useConnect();
   const [hasParticipated, setHasParticipated] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState(false);
   const { address, isConnected } = useAccount();
   const { writeContractAsync , isPending } = useWriteContract();
   const router = useRouter();
@@ -41,7 +42,8 @@ const Reward = () => {
           PARTICIPATION_KEY,
           JSON.stringify({ date: getCurrentDate(), correct: true })
         );
-        setHasParticipated(true);       
+        setHasParticipated(true);
+        setHasClaimed(true);       
         router.refresh();
         
       } else {
@@ -57,8 +59,9 @@ const Reward = () => {
     <div>
       <button
         onClick={reward}
+        disabled={isPending || hasClaimed}
         className={`px-4 py-2 bg-teal-500 text-white rounded mt-4 hover:bg-teal-700  ${
-          isPending ? "opacity-50 cursor-not-allowed" : ""}`}
+          isPending && hasClaimed ? "opacity-50 cursor-not-allowed" : ""}`}
       >
         {isPending ? "Claiming..." : "Claim Reward"}
         
