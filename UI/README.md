@@ -172,6 +172,12 @@ Before rendering questions, the platform verifies if the user has already partic
 
 ``` typescript
 
+const getCurrentDate = () => {
+  const date = new Date();
+  return date.toISOString().split("T")[0]; // Format as YYYY-MM-DD
+};
+
+
 const participationData = localStorage.getItem(PARTICIPATION_KEY);
 if (participationData) {
   const { date, correct } = JSON.parse(participationData);
