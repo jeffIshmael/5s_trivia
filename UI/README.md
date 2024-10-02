@@ -36,8 +36,7 @@ Ensure you have **Node.js** installed.
     ```
 
 ## Project Structure
-
-    ```css
+   
     5s_trivia/
     ├── UI/
     │   ├── app/
@@ -50,31 +49,69 @@ Ensure you have **Node.js** installed.
     │   │   │   └── Contracts.tsx
     │   └── Providers/
     │       └── BlockchainProviders.tsx
-    ```
+
 
 **Components:** Reusable UI elements like Header, Timer, Reward, and Questions.
 **Blockchain Integration:** Contains logic for interacting with smart contracts, handling blockchain configuration.
 
 ## Core Features and Functionalities
 1. ### Fetching Trivia Questions
-Questions are fetched from the Open Trivia DB API. To handle rate-limiting errors, the API calls are wrapped in a retry mechanism.
+5sTrivia platform is fetching questions from open-trivia DB API which is a free to use, user-contributed trivia question database. At the moment of writing this, 5sTrivia fetches on random topics with every fetch.
+The API is called using a retry mechanism to handle rate-limiting errors.
 
-``` typescript
+```typescript
 
-async function fetchQuestionsWithRetry(options: any, retries: number, delay: number) {
-  try {
-    return await getQuestions(options);
-  } catch (error: any) {
-    if (retries > 0 && error.status === 429) {
-      console.error(`Retrying... attempts left: ${retries}`);
-      await new Promise(res => setTimeout(res, delay));
-      return fetchQuestionsWithRetry(options, retries - 1, delay * 2);
-    } else {
-      throw new Error("Failed to fetch questions after multiple retries.");
+    const categories: CategoryResolvable[] = [
+    "General Knowledge",
+    "Animals",
+    "Vehicles",
+    "History",
+    "Politics",
+  ];
+
+  //Using retry mechanism to overcome the retry errors  
+  async function fetchQuestionsWithRetry(
+    options: any,
+    retries : number ,
+    delay: number 
+  ) {
+    try {
+      return await getQuestions(options);
+    } catch (error: any) {
+      if (retries > 0 && error.status === 429) {
+        console.error(Retrying... attempts left: ${retries});
+        await new Promise((res) => setTimeout(res, delay));
+        return fetchQuestionsWithRetry(options, retries - 1, delay * 2);
+      } else {
+        throw new Error("Failed to fetch questions after multiple retries.");
+      }
     }
   }
+
+  // function to get a random value from an array
+  const getRandomValueFromArray = (
+    array: (string | number)[]
+  ): string | number => {
+    const randomIndex = Math.floor(Math.random() * array.length);
+    return array[randomIndex];
+  };
+
+  const value = getRandomValueFromArray(categories) as CategoryResolvable;
+
+  const result = await fetchQuestionsWithRetry({
+            amount: 5,
+            category: value,
+            difficulty: "easy",
+          },5, 1000);
+
+The returned result is an object that has the following amog others;
+    interface Question {
+  question: string;
+  allAnswers: string[];
+  correctAnswer: string;
 }
 ```
+
 2. ### Timer and Answering System
 The timer ensures the user answers within the allocated time (50 seconds). When time runs out, a flag (isTimeout) is set.
 
