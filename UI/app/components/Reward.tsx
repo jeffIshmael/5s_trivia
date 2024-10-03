@@ -6,7 +6,6 @@ import { injected } from "wagmi/connectors";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
-
 const DAILY_QUESTION_KEY = "daily_question";
 const PARTICIPATION_KEY = "participation";
 
@@ -16,18 +15,22 @@ const getCurrentDate = () => {
 };
 
 const Reward = () => {
-
   const { connect } = useConnect();
-  const [hasParticipated, setHasParticipated] = useState(false);
-  const [hasClaimed, setHasClaimed] = useState(false);
+  const [hasClaimed, setHasClaimed] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const { address, isConnected } = useAccount();
-  const { writeContractAsync , isPending } = useWriteContract();
+  const { writeContractAsync } = useWriteContract();
   const router = useRouter();
 
-
-
   const reward = async () => {
-    if (isConnected) {
+    if (!isConnected) {
+      toast.error("please connect wallet");
+      connect({ connector: injected() });
+      return;
+    }
+    setLoading(true);
+
+    try {
       const tx = await writeContractAsync({
         address: TriviaContractAddress,
         abi: TriviaAbi,
@@ -36,36 +39,40 @@ const Reward = () => {
       });
       console.log(tx);
       if (tx) {
-        toast("claimed successfully");
-       
+        toast.success("claimed successfully");
         localStorage.setItem(
           PARTICIPATION_KEY,
           JSON.stringify({ date: getCurrentDate(), correct: true })
         );
-        setHasParticipated(true);
-        setHasClaimed(true);       
+        setHasClaimed(true);
         router.refresh();
-        
       } else {
-        toast("unable to claim");
+        toast.error("unable to claim");
       }
-    } else {
-      toast("Connect wallet to claim reward");
-      connect({ connector: injected() });
+    } catch (error) {
+      toast.error("make sure wallet is connected.");
+    } finally {
+      setLoading(false);
     }
   };
 
   return (
     <div>
-      <button
-        onClick={reward}
-        disabled={isPending || hasClaimed}
-        className={`px-4 py-2 bg-teal-500 text-white rounded mt-4 hover:bg-teal-700  ${
-          isPending && hasClaimed ? "opacity-50 cursor-not-allowed" : ""}`}
-      >
-        {isPending ? "Claiming..." : "Claim Reward"}
-        
-      </button>
+      {hasClaimed ? (
+        <div>
+          <p className="text-center text-lg text-teal-400 mt-4 ">Successfully claimed!</p>
+        </div>
+      ): (
+        <button
+          onClick={reward}
+          disabled={loading}
+          className={`px-4 py-2 bg-teal-500 text-white rounded mt-4 hover:bg-teal-700  ${
+            loading ? "opacity-50 cursor-not-allowed" : ""
+          }`}
+        >
+          {loading ? "Claiming..." : "Claim Reward"}
+        </button>
+      )}
     </div>
   );
 };
